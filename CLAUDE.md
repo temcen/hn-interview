@@ -1,10 +1,10 @@
 # Proyecto: interview
 
 ## Comandos (completar al elegir el stack)
-- Instalar: `TODO`
-- Test: `TODO`
-- Lint/format: `TODO`
-- Build/run: `TODO`
+- Instalar: nada (Go 1.24+, solo stdlib)
+- Test: `go test -race ./...`
+- Lint/format: `go vet ./... && gofmt -l .`
+- Build/run: `go run ./cmd/hncapture` (ver `README.md` para subcomandos)
 
 ## Forma de trabajo
 - Antes de implementar: aclarar requisitos y proponer un diseño corto.
