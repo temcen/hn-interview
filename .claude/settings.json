@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git branch:*)",
+      "Bash(ls:*)", "Bash(pnpm test:*)", "Bash(pnpm lint:*)", "Bash(npm test:*)", "Bash(npm run lint:*)",
+      "Bash(go test:*)", "Bash(go vet:*)", "Bash(python3 -m pytest:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)", "Bash(git push --force:*)", "Bash(git push -f:*)", "Bash(curl * | sh)", "Bash(curl * | bash)",
+      "Read(./.env)", "Read(./.env.*)", "Read(**/*.pem)", "Read(**/id_rsa*)"
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "enableAllProjectMcpServers": true,
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Edit|Write|Read", "hooks": [{ "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-secrets.sh" }] }
+    ],
+    "PostToolUse": [
+      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/format.sh" }] }
+    ]
+  }
+}
