@@ -10,6 +10,9 @@ import (
 type CaptureOptions struct {
 	// Concurrency caps in-flight upstream requests. Values < 1 mean 1.
 	Concurrency int
+	// FullProfiles keeps each author's full submission id list. Otherwise
+	// only SubmittedCount is kept (the lists dominate archive size).
+	FullProfiles bool
 }
 
 // Facade is the only entry point driving adapters (the CLI) use.

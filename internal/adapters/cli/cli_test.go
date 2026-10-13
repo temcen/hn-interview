@@ -18,6 +18,7 @@ type call struct {
 	n, id       int
 	user, dest  string
 	concurrency int
+	full        bool
 }
 
 type fakeFacade struct {
@@ -29,7 +30,7 @@ type fakeFacade struct {
 }
 
 func (f *fakeFacade) CaptureTop(_ context.Context, n int, o ports.CaptureOptions) (domain.Capture, error) {
-	f.calls = append(f.calls, call{method: "top", n: n, concurrency: o.Concurrency})
+	f.calls = append(f.calls, call{method: "top", n: n, concurrency: o.Concurrency, full: o.FullProfiles})
 	return f.capture, f.err
 }
 
@@ -71,10 +72,10 @@ func TestDefaultIsCaptureTop5AndSaves(t *testing.T) {
 
 func TestCaptureFlags(t *testing.T) {
 	f := &fakeFacade{}
-	if code, _, e := run(f, "capture", "--top", "3", "--concurrency", "4", "--out", ""); code != 0 {
+	if code, _, e := run(f, "capture", "--top", "3", "--concurrency", "4", "--full-profiles", "--out", ""); code != 0 {
 		t.Fatalf("code = %d: %s", code, e)
 	}
-	want := []call{{method: "top", n: 3, concurrency: 4}}
+	want := []call{{method: "top", n: 3, concurrency: 4, full: true}}
 	if fmt.Sprint(f.calls) != fmt.Sprint(want) {
 		t.Fatalf("calls = %v (empty --out must skip saving)", f.calls)
 	}

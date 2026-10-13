@@ -37,7 +37,7 @@ func authors(threads []domain.Thread) []string {
 
 // fetchUsers fetches each profile once, concurrently. Failures are recorded,
 // not returned, so one bad profile doesn't sink the capture.
-func (r *run) fetchUsers(ctx context.Context, ids []string) (map[string]domain.User, []domain.MissingUser) {
+func (r *run) fetchUsers(ctx context.Context, ids []string, full bool) (map[string]domain.User, []domain.MissingUser) {
 	users := make(map[string]domain.User, len(ids))
 	missing := []domain.MissingUser{}
 	var mu sync.Mutex
@@ -55,7 +55,12 @@ func (r *run) fetchUsers(ctx context.Context, ids []string) (map[string]domain.U
 			case u == nil:
 				missing = append(missing, domain.MissingUser{ID: id, Status: domain.StatusNotFound})
 			default:
-				users[id] = *u
+				p := *u
+				p.SubmittedCount = len(p.Submitted)
+				if !full {
+					p.Submitted = nil
+				}
+				users[id] = p
 			}
 		}()
 	}

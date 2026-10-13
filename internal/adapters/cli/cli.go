@@ -74,10 +74,11 @@ func (c CLI) Run(ctx context.Context, args []string) int {
 
 // captureFlags are shared by capture and story.
 type captureFlags struct {
-	out         string
-	concurrency int
-	timeout     time.Duration
-	format      string
+	out          string
+	concurrency  int
+	timeout      time.Duration
+	format       string
+	fullProfiles bool
 }
 
 func (c CLI) newFlagSet(name string) *flag.FlagSet {
@@ -91,6 +92,7 @@ func (f *captureFlags) register(fs *flag.FlagSet) {
 	fs.IntVar(&f.concurrency, "concurrency", 16, "max in-flight API requests")
 	fs.DurationVar(&f.timeout, "timeout", 5*time.Minute, "overall timeout")
 	fs.StringVar(&f.format, "format", "tree", "stdout format: tree, json or none")
+	fs.BoolVar(&f.fullProfiles, "full-profiles", false, "keep each author's full submission id list (large)")
 }
 
 func (f *captureFlags) validate() error {
@@ -152,7 +154,7 @@ func (c CLI) runCapture(ctx context.Context, f captureFlags, do func(context.Con
 	defer cancel()
 
 	start := time.Now()
-	capture, err := do(ctx, ports.CaptureOptions{Concurrency: f.concurrency})
+	capture, err := do(ctx, ports.CaptureOptions{Concurrency: f.concurrency, FullProfiles: f.fullProfiles})
 	if err != nil {
 		return err
 	}

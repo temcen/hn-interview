@@ -69,6 +69,21 @@ func TestCaptureTopTakesFirstNInOrderAndDedupesUsers(t *testing.T) {
 	}
 }
 
+func TestProfilesKeepSubmittedCountUnlessFull(t *testing.T) {
+	fc := twoStoryClient()
+	fc.users["alice"].Submitted = []int{1, 2, 3}
+
+	c, _ := New(fc, &fakeArchive{}).CaptureStory(context.Background(), 10, ports.CaptureOptions{})
+	if u := c.Users["alice"]; u.Submitted != nil || u.SubmittedCount != 3 {
+		t.Fatalf("trimmed profile = %+v", u)
+	}
+
+	c, _ = New(fc, &fakeArchive{}).CaptureStory(context.Background(), 10, ports.CaptureOptions{FullProfiles: true})
+	if u := c.Users["alice"]; len(u.Submitted) != 3 || u.SubmittedCount != 3 {
+		t.Fatalf("full profile = %+v", u)
+	}
+}
+
 func TestCaptureTopClampsNAndRejectsNonPositive(t *testing.T) {
 	svc := New(twoStoryClient(), &fakeArchive{})
 	c, err := svc.CaptureTop(context.Background(), 50, ports.CaptureOptions{})

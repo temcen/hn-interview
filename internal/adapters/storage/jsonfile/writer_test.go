@@ -27,6 +27,9 @@ func TestWriteCreatesTimestampedFileThatRoundTrips(t *testing.T) {
 	if want := filepath.Join(dir, "capture-20261013T093015Z.json"); path != want {
 		t.Fatalf("path = %s, want %s", path, want)
 	}
+	if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0o644 {
+		t.Fatalf("stat = %v, %v; want mode 0644", info, err)
+	}
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)

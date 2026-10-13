@@ -41,6 +41,10 @@ func (Writer) Write(_ context.Context, c domain.Capture, dir string) (string, er
 	if err := tmp.Close(); err != nil {
 		return "", err
 	}
+	// CreateTemp uses 0600; archives are meant to be shared.
+	if err := os.Chmod(tmp.Name(), 0o644); err != nil {
+		return "", err
+	}
 	if err := os.Rename(tmp.Name(), path); err != nil {
 		return "", err
 	}

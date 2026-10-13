@@ -141,7 +141,7 @@ func renderSummary(w io.Writer, c domain.Capture, elapsed time.Duration) {
 }
 
 func renderUser(w io.Writer, u domain.User) {
-	fmt.Fprintf(w, "%s\n  karma: %d\n  created: %s\n  submissions: %d\n", u.ID, u.Karma, ts(u.Created), len(u.Submitted))
+	fmt.Fprintf(w, "%s\n  karma: %d\n  created: %s\n  submissions: %d\n", u.ID, u.Karma, ts(u.Created), u.SubmittedCount)
 	if u.About != "" {
 		fmt.Fprintf(w, "  about: %s\n", cleanText(u.About, 300))
 	}

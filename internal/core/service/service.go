@@ -34,11 +34,11 @@ func (s *Service) CaptureTop(ctx context.Context, n int, opts ports.CaptureOptio
 	if err != nil {
 		return domain.Capture{}, fmt.Errorf("fetch top stories: %w", err)
 	}
-	return s.capture(ctx, r, ids[:min(n, len(ids))]), nil
+	return s.capture(ctx, r, ids[:min(n, len(ids))], opts.FullProfiles), nil
 }
 
 func (s *Service) CaptureStory(ctx context.Context, id int, opts ports.CaptureOptions) (domain.Capture, error) {
-	return s.capture(ctx, newRun(s.client, opts.Concurrency), []int{id}), nil
+	return s.capture(ctx, newRun(s.client, opts.Concurrency), []int{id}, opts.FullProfiles), nil
 }
 
 func (s *Service) GetUser(ctx context.Context, id string) (domain.User, error) {
@@ -49,6 +49,7 @@ func (s *Service) GetUser(ctx context.Context, id string) (domain.User, error) {
 	if u == nil {
 		return domain.User{}, fmt.Errorf("user %q: %w", id, domain.ErrNotFound)
 	}
+	u.SubmittedCount = len(u.Submitted)
 	return *u, nil
 }
 
@@ -58,7 +59,7 @@ func (s *Service) Save(ctx context.Context, c domain.Capture, dest string) (stri
 
 // capture builds every story thread concurrently, then fetches the profile
 // of every author found in them.
-func (s *Service) capture(ctx context.Context, r *run, ids []int) domain.Capture {
+func (s *Service) capture(ctx context.Context, r *run, ids []int, fullProfiles bool) domain.Capture {
 	c := domain.Capture{CapturedAt: s.now(), Stories: make([]domain.Thread, len(ids))}
 	var wg sync.WaitGroup
 	for i, id := range ids {
@@ -69,7 +70,7 @@ func (s *Service) capture(ctx context.Context, r *run, ids []int) domain.Capture
 		}()
 	}
 	wg.Wait()
-	c.Users, c.MissingUsers = r.fetchUsers(ctx, authors(c.Stories))
+	c.Users, c.MissingUsers = r.fetchUsers(ctx, authors(c.Stories), fullProfiles)
 	return c
 }
 
