@@ -77,7 +77,7 @@ func (c *Client) User(ctx context.Context, id string) (*domain.User, error) {
 
 // get fetches path into v. It reports found=false when the API returns a
 // JSON null. Network errors, 429 and 5xx are retried with exponential backoff.
-func (c *Client) get(ctx context.Context, path string, v any) (found bool, err error) {
+func (c *Client) get(ctx context.Context, path string, v any) (found bool, err error) { // use a common library for this? e.g. github.com/hashicorp/go-retryablehttp
 	for attempt := 0; ; attempt++ {
 		var body []byte
 		var retryable bool

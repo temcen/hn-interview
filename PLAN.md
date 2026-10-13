@@ -1,7 +1,7 @@
 # Plan: HN capture pipeline (Go, hexagonal, CLI)
 
 ## Context
-Interview take-home ([task.md](task.md)): archive public HN discussion threads for compliance.
+Interview take-home: archive public HN discussion threads for compliance.
 Capture the **top 5 stories**, each with its **complete comment tree**, and the **profile of every author involved**. Fetches must run **concurrently**.
 From the output alone a reader must be able to see: (1) the full thread with depth, (2) the author of every post and comment, (3) any items missing from a thread.
 Deliverables: runnable with one command, its output, and a short README (decisions, assumptions, what was cut, how AI was used).
